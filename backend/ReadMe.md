@@ -15,7 +15,10 @@
    - Ability to give and take appreciations or rewards.
    - Ability to view the transormations they brought or part of.
    - Ability to Prioritize the Philanthropic activities based on categories like,
-     - Urgency, Scale, Required Resources and Time available. 
+     - Urgency, 
+     - Scale, 
+     - Required Resources, 
+     - Time available, etc. 
        
 **3. Scalable micro service based Kubernetes Architecture.**
 
