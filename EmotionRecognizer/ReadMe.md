@@ -3,8 +3,7 @@
 # Plan of Action and flow of activities 
 
 **Step1: Image pre processing to convert JPEG images to tensforflow record data**
-[example image conversion tool]
-(https://github.com/tensorflow/models/blob/master/research/inception/inception/data/build_image_data.py)
+[example image conversion tool] (https://github.com/tensorflow/models/blob/master/research/inception/inception/data/build_image_data.py)
 
 **step2: Feature Engineering**
 Identify the appropriate features and organise the input for Training set, Validation set and Test set.
