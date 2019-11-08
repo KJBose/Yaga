@@ -14,6 +14,7 @@
      - Ability to view the transormations they brought or part of.
      - Ability to Prioritize the Philanthropic activities based on categories like,
        - Urgency, Scale, Required Resources and Time available. 
+       
 **3. Scalable micro service based Kubernetes Architecture.**
 
 
