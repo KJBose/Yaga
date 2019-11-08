@@ -1,6 +1,0 @@
-This is a test file
-
-Editing this file again and comitting
-
-
-Added another new line
