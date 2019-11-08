@@ -7,15 +7,15 @@
 
 **2. Features include.**
 
-   **- Ability for multiple users to signup and signin.
-     - creat a profile (Individual, NPO, GOV).
-     - Ability to give and take Help.
-     - Ability to see the count of Help given or taken.
-     - Ability to track the status of Help given or taken.
-     - Ability to give and take appreciations or rewards.
-     - Ability to view the transormations they brought or part of.
-     - Ability to Prioritize the Philanthropic activities based on categories like,
-       - Urgency, Scale, Required Resources and Time available. **
+   **- Ability for multiple users to signup and signin.**
+   **- creat a profile (Individual, NPO, GOV).**
+   **- Ability to give and take Help.**
+   **- Ability to see the count of Help given or taken.**
+   **- Ability to track the status of Help given or taken.**
+   **- Ability to give and take appreciations or rewards.**
+   **- Ability to view the transormations they brought or part of.**
+   **- Ability to Prioritize the Philanthropic activities based on categories like,**
+     **- Urgency, Scale, Required Resources and Time available. **
        
 **3. Scalable micro service based Kubernetes Architecture.**
 
