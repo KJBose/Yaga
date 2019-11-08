@@ -3,8 +3,8 @@
 
 ## Backend Objectives
 
-**1. To provide REST API for interacting with UI or any applicaton [like emotion recognizer] to sit on top of Yaga.
-  2. Features include.
+**1. To provide REST API for interacting with UI or any applicaton [like emotion recognizer] to sit on top of Yaga.**
+**2. Features include.**
      - Ability for multiple users to signup and signin.
      - creat a profile (Individual, NPO, GOV).
      - Ability to give and take Help.
