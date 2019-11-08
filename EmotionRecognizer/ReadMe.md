@@ -21,7 +21,7 @@ Build YOLO or an LSTM model, using Keras and PyTorch/TensorFlow.
 
 **8. Test the model with Test set.**
 
-**9: Move to Production by hooking up this application to real Yaga data and feed the insights back to Yaga for decision making and Yaga action.**
+**9. Move to Production by hooking up this application to real Yaga data and feed the insights back to Yaga for decision making and Yaga action.**
 
 
 
