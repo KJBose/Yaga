@@ -1,6 +1,6 @@
-####This Project is meant to identify and recognize emotions in a given image.
+#### This Project is meant to identify and recognize emotions in a given image.
 
-#Plan of Action and flow of activities 
+# Plan of Action and flow of activities 
 
 **Step1: Image pre processing to convert JPEG images to tensforflow record data**
 [example image conversion tool]
