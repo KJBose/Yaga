@@ -1,6 +1,3 @@
-** This Backend was developed using ruby on Rails **
-** Objective is to move this to Python based code and further enhance by implementing all the features envisioned **
-
 ## Backend Objectives
 
 **1. To provide REST API for interacting with UI or any applicaton [like emotion recognizer] to sit on top of Yaga.**
@@ -15,6 +12,9 @@
      - Ability to Prioritize the Philanthropic activities based on categories like,
        - Urgency, Scale, Required Resources and Time available. 
 **3. Scalable micro service based Kubernetes Architecture.**
+
+** This Backend was developed using ruby on Rails **
+** Objective is to move this to Python based code and further enhance by implementing all the features envisioned **
 
 
 
