@@ -36,7 +36,7 @@ gem 'will_paginate', '~> 3.0.7'
 gem 'devise', '~>3.5', '>= 3.5.3'
 
 # Use below gems for integrated authentication by Bose 03/03/2017
-gem 'doorkeeper', '~>3.1'
+gem 'doorkeeper', '~>5.0'
 gem "doorkeeper-mongodb", github:"doorkeeper-gem/doorkeeper-mongodb"
 gem 'oauth2', '~>1.0'
 # Use Capistrano for deployment
