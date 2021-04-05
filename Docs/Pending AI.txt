@@ -1,0 +1,2 @@
+1. OAuth based token generation for page/resource view.
+2. Devise customization for user profile creation/modification/deletion.
