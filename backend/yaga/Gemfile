@@ -33,7 +33,7 @@ gem 'will_paginate', '~> 3.0.7'
 # gem 'unicorn'
 
 # Use devise as the authentication manager  by Bose 03/03/2017
-gem 'devise', '~>3.5', '>= 3.5.3'
+gem 'devise', '~>4.7'
 
 # Use below gems for integrated authentication by Bose 03/03/2017
 gem 'doorkeeper', '~>3.1'
