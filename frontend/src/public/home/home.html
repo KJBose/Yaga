@@ -1,23 +1,168 @@
-<div id="main-content" class="container">
-  <div class="jumbotron">
-    <img src="images/jumbotron_768.jpg" alt="Picture of restaurant" class="img-responsive visible-xs">
-  </div>
-  <div id="home-tiles" class="row">
-    <div class="col-md-4 col-sm-6 col-xs-12">
-      <a ui-sref="public.menu"><div id="menu-tile"><span>menu</span></div></a>
-    </div>
-    <div class="col-md-4 col-sm-6 col-xs-12">
-      <a ui-sref="public.menuitems({category: 'SP'})">
-        <div id="specials-tile"><span>specials</span></div>
-      </a>
-    </div>
-    <div class="col-md-4 col-sm-12 col-xs-12">
-      <a href="https://www.google.com/maps/place/David+Chu's+China+Bistro/@39.3635874,-76.7138622,17z/data=!4m6!1m3!3m2!1s0x89c81a14e7817803:0xab20a0e99daa17ea!2sDavid+Chu's+China+Bistro!3m1!1s0x89c81a14e7817803:0xab20a0e99daa17ea" target="_blank">
-        <div id="map-tile">
-          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3084.675372390488!2d-76.71386218529199!3d39.3635874269356!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c81a14e7817803%3A0xab20a0e99daa17ea!2sDavid+Chu&#39;s+China+Bistro!5e0!3m2!1sen!2sus!4v1452824864156" width="100%" height="250" frameborder="0" style="border:0" allowfullscreen></iframe>
-          <span>map</span>
+<div class="container social-home">
+  <section class="social-hero-card">
+    <div class="social-hero-layout">
+      <div class="social-hero-copy">
+        <h1>Community Pulse</h1>
+        <p>Track help requests, support in action, and completed impact from your network and interests.</p>
+        <div class="social-hero-actions">
+          <button class="btn btn-primary" ng-if="!homeCtrl.isAuthenticated" ng-click="homeCtrl.openLogin()">Login To Personalize</button>
+          <button class="btn btn-default" ng-if="homeCtrl.isAuthenticated" ng-click="homeCtrl.openSupport()">Open Support Board</button>
         </div>
-      </a>
+        <div class="social-hero-network" ng-if="homeCtrl.isAuthenticated">
+          <span><strong>{{ homeCtrl.socialGraph.follower_count }}</strong> followers</span>
+          <span><strong>{{ homeCtrl.socialGraph.following_count }}</strong> following</span>
+        </div>
+      </div>
+      <div class="social-hero-media">
+        <img src="images/img1.jpg" alt="Yaga inspiration" class="social-hero-image">
+      </div>
     </div>
+  </section>
+
+  <section class="social-guest-panel panel panel-default" ng-if="!homeCtrl.isAuthenticated">
+    <div class="panel-body">
+      <div class="social-guest-headline">
+        <span class="social-guest-badge">After You Login</span>
+        <h3 class="social-guest-title">Your Personalized Impact Feed</h3>
+      </div>
+      <p class="social-guest-intro">See interest-driven updates, network activity, and top contribution signals in one place.</p>
+      <ul class="social-plain-list social-guest-list">
+        <li>Requests, offers, and completed help in your selected interests</li>
+        <li>Activity from followers and people you follow</li>
+        <li>Global contribution ranking across all users</li>
+      </ul>
+      <div class="social-guest-actions">
+        <a class="btn btn-primary" ui-sref="public.createAccount">Create Account</a>
+      </div>
+    </div>
+  </section>
+
+  <div ng-if="homeCtrl.isAuthenticated">
+    <section class="row social-kpi-row">
+      <div class="col-sm-4">
+        <div class="social-kpi-card">
+          <div class="social-kpi-label">Requested</div>
+          <div class="social-kpi-value">{{ homeCtrl.summary.requested }}</div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="social-kpi-card">
+          <div class="social-kpi-label">Given</div>
+          <div class="social-kpi-value">{{ homeCtrl.summary.given }}</div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="social-kpi-card">
+          <div class="social-kpi-label">Taken</div>
+          <div class="social-kpi-value">{{ homeCtrl.summary.taken }}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="row">
+      <div class="col-md-8">
+        <div class="panel panel-default social-interest-panel">
+          <div class="panel-body">
+            <div class="social-section-title">Feed Interests</div>
+            <p class="social-section-subtitle">Updates are prioritized by your interests and people in your network.</p>
+            <div class="social-interest-chips">
+              <button
+                type="button"
+                class="social-chip"
+                ng-repeat="interest in homeCtrl.interestOptions"
+                ng-class="{'active': homeCtrl.isSelectedInterest(interest.id)}"
+                ng-click="homeCtrl.toggleInterest(interest.id)">
+                {{ interest.label }}
+              </button>
+            </div>
+            <div class="social-panel-actions">
+              <button type="button" class="btn btn-primary btn-sm" ng-click="homeCtrl.saveInterests()">Save Interests</button>
+              <button type="button" class="btn btn-default btn-sm" ng-click="homeCtrl.refreshFeed()">Refresh Feed</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default social-feed-panel">
+          <div class="panel-body">
+            <div class="social-section-title">Personalized Home Updates</div>
+            <p class="social-section-subtitle">Signals from selected interests and activity from followers/following.</p>
+            <div class="social-feed-filter">
+              <button class="social-filter-btn" ng-class="{active: homeCtrl.isFeedView('all')}" ng-click="homeCtrl.setFeedView('all')">All</button>
+              <button class="social-filter-btn" ng-class="{active: homeCtrl.isFeedView('requested')}" ng-click="homeCtrl.setFeedView('requested')">Requested</button>
+              <button class="social-filter-btn" ng-class="{active: homeCtrl.isFeedView('given')}" ng-click="homeCtrl.setFeedView('given')">Given</button>
+              <button class="social-filter-btn" ng-class="{active: homeCtrl.isFeedView('taken')}" ng-click="homeCtrl.setFeedView('taken')">Taken</button>
+            </div>
+            <p class="text-danger" ng-if="homeCtrl.error">{{ homeCtrl.error }}</p>
+            <p ng-if="homeCtrl.loadingFeed">Loading updates...</p>
+            <div class="social-update-item" ng-repeat="update in homeCtrl.visibleUpdates() track by update.id">
+              <div class="social-update-meta">
+                <span class="social-update-type" ng-class="'type-' + update.update_type">{{ update.update_type }}</span>
+                <span class="social-source">{{ update.source }}</span>
+                <span>{{ update.category || 'general' }}</span>
+                <span>{{ update.happened_at | date:'medium' }}</span>
+              </div>
+              <div class="social-update-title">{{ update.title }}</div>
+              <div class="social-update-message">{{ update.message }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="panel panel-default social-network-card">
+          <div class="panel-body">
+            <div class="social-section-title">Network Watchlist</div>
+            <p class="social-section-subtitle">Followers and following that influence your home updates.</p>
+            <div class="social-mini-grid">
+              <div>
+                <h5>Followers</h5>
+                <ul class="social-people-list compact">
+                  <li ng-repeat="person in homeCtrl.socialGraph.followers | limitTo:4 track by person.id">
+                    <div class="social-person-name">
+                      <a href="" class="social-profile-link" ng-if="homeCtrl.canOpenProfile(person.id)" ng-click="homeCtrl.openUserProfile(person.id)">{{ person.full_name }}</a>
+                      <span ng-if="!homeCtrl.canOpenProfile(person.id)">{{ person.full_name }}</span>
+                      <a href="" class="social-profile-action" ng-if="homeCtrl.canStartChat(person.id)" ng-click="homeCtrl.startChat(person.id)">Message</a>
+                    </div>
+                    <div class="social-person-headline">{{ person.headline }}</div>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h5>Following</h5>
+                <ul class="social-people-list compact">
+                  <li ng-repeat="person in homeCtrl.socialGraph.following | limitTo:4 track by person.id">
+                    <div class="social-person-name">
+                      <a href="" class="social-profile-link" ng-if="homeCtrl.canOpenProfile(person.id)" ng-click="homeCtrl.openUserProfile(person.id)">{{ person.full_name }}</a>
+                      <span ng-if="!homeCtrl.canOpenProfile(person.id)">{{ person.full_name }}</span>
+                      <a href="" class="social-profile-action" ng-if="homeCtrl.canStartChat(person.id)" ng-click="homeCtrl.startChat(person.id)">Message</a>
+                    </div>
+                    <div class="social-person-headline">{{ person.headline }}</div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default social-rank-panel">
+          <div class="panel-body">
+            <div class="social-section-title">Global Contributors</div>
+            <ol class="social-rank-list">
+              <li ng-repeat="row in homeCtrl.topLeaders track by (row.profile.id || $index)">
+                <span class="social-rank-name">
+                  <a href="" class="social-profile-link" ng-if="homeCtrl.canOpenProfile(row.profile.id)" ng-click="homeCtrl.openUserProfile(row.profile.id)">{{ row.profile.full_name || 'User' }}</a>
+                  <span ng-if="!homeCtrl.canOpenProfile(row.profile.id)">{{ row.profile.full_name || 'User' }}</span>
+                </span>
+                <span>
+                  <a href="" class="social-profile-action" ng-if="homeCtrl.canStartChat(row.profile.id)" ng-click="homeCtrl.startChat(row.profile.id)">Message</a>
+                  <span class="social-rank-score">{{ row.score }}</span>
+                </span>
+              </li>
+            </ol>
+            <a class="btn btn-default btn-sm" ui-sref="public.profile">Open Profile</a>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </div>

@@ -1,2 +1,3 @@
-class Yagauser < ActiveRecord::Base
+class Yagauser
+  include ActiveModel::Model
 end

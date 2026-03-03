@@ -4,48 +4,44 @@
 angular.module('public')
 .controller('SignUpFormController', SignUpFormController);
 
-SignUpFormController.$inject = ['$state', 'MenuService', 'UserDataService'];
-function SignUpFormController($state, MenuService, UserDataService) {
+SignUpFormController.$inject = ['$state', 'AuthService'];
+function SignUpFormController($state, AuthService) {
   var $ctrl = this;
+
+  $ctrl.userTypes = ['Individual', 'NPO', 'GOV'];
   $ctrl.user = {
-  firstname:'',
-  lastname:'',
-  email:'',
-  phonenumber:'',
-  favdish:'',
-  userselectedDish:''
- }
-  $ctrl.user.firstname = '';
-  $ctrl.user.lastname = '';
-  $ctrl.user.email = '';
-  $ctrl.user.phonenumber = '';
-  $ctrl.user.favdish = '';
-  $ctrl.userSaved = '';
-  $ctrl.menuNotExist = '';
+    first_name: '',
+    last_name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+    phone: '',
+    user_type: 'Individual',
+    organization_name: '',
+    bio: ''
+  };
+  $ctrl.error = '';
+  $ctrl.success = '';
+  $ctrl.processing = false;
 
-  //$ctrl.user = {};
-  /*$ctrl.userInput = userInput;
-  $ctrl.signUpComplete = false;*/
-  //console.log(" I came to ctrl");
-  $ctrl.go = function(userdata) {
-    //console.log("entere the Go function");
-    $ctrl.signUpComplete = true;
-    var promise = MenuService.getMenuItems(userdata);
-    promise.then(function (response){
-      $ctrl.user.userselectedDish = response;
-      //console.log('selected dish details', $ctrl.user.userselectedDish);
-      if($ctrl.user.userselectedDish.category != '') {
-        UserDataService.saveUserData($ctrl.user);
-        $ctrl.userSaved = true;
-      } else {
-        $ctrl.menuNotExist = true;
-      }
-    });
+  $ctrl.submit = function () {
+    $ctrl.error = '';
+    $ctrl.success = '';
+    $ctrl.processing = true;
 
-
-  }
-
+    AuthService.signUp($ctrl.user)
+      .then(function () {
+        $ctrl.success = 'Account created. Redirecting to your profile...';
+        return $state.go('public.profile');
+      })
+      .catch(function (error) {
+        var apiErrors = error && error.data && error.data.errors;
+        $ctrl.error = apiErrors ? apiErrors.join(', ') : 'Unable to create account.';
+      })
+      .finally(function () {
+        $ctrl.processing = false;
+      });
+  };
 }
-
 
 })();

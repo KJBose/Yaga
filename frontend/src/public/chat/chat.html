@@ -1,0 +1,97 @@
+<div class="container social-chat">
+  <div class="text-center social-guest-panel panel panel-default" ng-if="!chatCtrl.isAuthenticated">
+    <div class="panel-body">
+      <h3>Login to message other users</h3>
+      <p>Chat is available for authenticated users so conversations stay connected to real profiles.</p>
+      <button class="btn btn-primary" ng-click="chatCtrl.openLogin()">Login</button>
+      <button class="btn btn-default" ng-click="chatCtrl.openCreateAccount()">Create Account</button>
+    </div>
+  </div>
+
+  <div ng-if="chatCtrl.isAuthenticated">
+    <div class="panel panel-default social-chat-shell">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="social-chat-sidebar">
+              <div class="social-chat-sidebar-header">
+                <h4>Conversations</h4>
+                <button class="btn btn-default btn-xs" ng-click="chatCtrl.refreshConversations()">Refresh</button>
+              </div>
+
+              <p class="text-danger" ng-if="chatCtrl.error">{{ chatCtrl.error }}</p>
+              <p ng-if="chatCtrl.loading || chatCtrl.syncing">Loading chats...</p>
+
+              <div class="social-chat-empty" ng-if="!chatCtrl.loading && !chatCtrl.conversations.length">
+                No conversations yet. Open any user profile and click <strong>Message</strong> to start one.
+              </div>
+
+              <button
+                type="button"
+                class="social-chat-thread"
+                ng-repeat="conversation in chatCtrl.conversations track by conversation.id"
+                ng-class="{'active': chatCtrl.activeConversation && chatCtrl.activeConversation.id === conversation.id}"
+                ng-click="chatCtrl.selectConversation(conversation.id)">
+                <div class="social-chat-thread-name">{{ chatCtrl.conversationName(conversation) }}</div>
+                <div class="social-chat-thread-preview">{{ chatCtrl.conversationPreview(conversation) }}</div>
+                <div class="social-chat-thread-time">{{ conversation.last_message_at | date:'short' }}</div>
+              </button>
+            </div>
+          </div>
+
+          <div class="col-md-8">
+            <div class="social-chat-main">
+              <div class="social-chat-empty" ng-if="!chatCtrl.activeConversation">
+                Select a conversation to start chatting.
+              </div>
+
+              <div ng-if="chatCtrl.activeConversation">
+                <div class="social-chat-header">
+                  <div>
+                    <h4>{{ chatCtrl.conversationName(chatCtrl.activeConversation) }}</h4>
+                    <p>{{ chatCtrl.conversationHeadline(chatCtrl.activeConversation) }}</p>
+                  </div>
+                  <div class="social-chat-header-actions">
+                    <button
+                      class="btn btn-default btn-sm"
+                      ng-if="chatCtrl.canOpenProfile(chatCtrl.activeOtherProfileId())"
+                      ng-click="chatCtrl.openParticipantProfile(chatCtrl.activeOtherProfileId())">View Profile</button>
+                    <button class="btn btn-default btn-sm" ng-click="chatCtrl.reloadActiveConversation()">Refresh</button>
+                  </div>
+                </div>
+
+                <div class="social-chat-log">
+                  <div
+                    class="social-chat-msg"
+                    ng-repeat="message in chatCtrl.messages track by message.id"
+                    ng-class="{'mine': message.mine}">
+                    <div class="social-chat-msg-meta">
+                      <span>{{ (message.sender && message.sender.full_name) || 'Member' }}</span>
+                      <span>{{ message.created_at | date:'short' }}</span>
+                    </div>
+                    <div class="social-chat-msg-body">{{ message.body }}</div>
+                  </div>
+                </div>
+
+                <form class="social-chat-compose" ng-submit="chatCtrl.sendMessage()">
+                  <textarea
+                    class="form-control"
+                    rows="3"
+                    maxlength="2000"
+                    placeholder="Type your message..."
+                    ng-model="chatCtrl.newMessage"
+                    required></textarea>
+                  <div class="social-chat-compose-actions">
+                    <button class="btn btn-primary" type="submit" ng-disabled="chatCtrl.sending || !(chatCtrl.newMessage && chatCtrl.newMessage.trim())">
+                      {{ chatCtrl.sending ? 'Sending...' : 'Send Message' }}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

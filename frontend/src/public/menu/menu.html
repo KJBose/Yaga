@@ -1,11 +1,298 @@
-<div class="container">
-  <h2 id="menu-categories-title" class="text-center">Menu Categories</h2>
-  <div class="text-center">
-    Substituting white rice with brown rice or fried rice after 3:00pm will be $1.50 for a pint and $2.50 for a quart.
-  </div>
+<div class="container social-support">
+  <section class="panel panel-default social-support-hero">
+    <div class="panel-body text-center">
+      <h2>Support Board</h2>
+      <p class="social-support-subtitle">
+        Prioritized philanthropic activities based on urgency, scale, required resources, and time available.
+      </p>
+      <p ng-if="!menuCtrl.isAuthenticated" class="social-support-note">
+        Guests can request support anonymously. Login if you also want to take help, manage status, and send appreciations.
+      </p>
+    </div>
+  </section>
 
-  <menu-category ng-repeat="menuCategory in menuCtrl.menuCategories"
-                 category="menuCategory">
-  </menu-category>
+  <section class="panel panel-default social-support-composer">
+    <div class="panel-body">
+      <div class="social-support-header">
+        <h3>{{ menuCtrl.isAuthenticated ? 'Create Help Request / Offer' : 'Request Support Anonymously' }}</h3>
+      </div>
 
+      <div class="social-chain-config" ng-if="menuCtrl.isAuthenticated">
+        <div class="social-chain-config-header">
+          <h4>Smart Contract Sync</h4>
+          <span class="label label-success" ng-if="menuCtrl.walletSupported">Wallet available</span>
+          <span class="label label-default" ng-if="!menuCtrl.walletSupported">Wallet unavailable</span>
+        </div>
+        <p class="social-chain-config-note">
+          Connect MetaMask and configure `HelpRegistry` contract details to auto-anchor create/take/progress/complete/cancel transactions.
+        </p>
+        <div class="row">
+          <div class="col-sm-5 form-group">
+            <label>Contract Address</label>
+            <input class="form-control" type="text" placeholder="0x..." ng-model="menuCtrl.chainConfig.contractAddress">
+          </div>
+          <div class="col-sm-2 form-group">
+            <label>Chain ID</label>
+            <input class="form-control" type="number" min="1" ng-model="menuCtrl.chainConfig.preferredChainId">
+          </div>
+          <div class="col-sm-5 form-group social-chain-config-actions">
+            <button type="button" class="btn btn-default btn-sm" ng-click="menuCtrl.saveChainConfig()">Save Config</button>
+            <button type="button" class="btn btn-primary btn-sm" ng-disabled="menuCtrl.walletBusy || !menuCtrl.walletSupported" ng-click="menuCtrl.connectWallet()">
+              {{ menuCtrl.walletBusy ? 'Connecting...' : 'Connect Wallet' }}
+            </button>
+            <button type="button" class="btn btn-default btn-sm" ng-disabled="menuCtrl.walletBusy || !menuCtrl.walletAddress" ng-click="menuCtrl.switchWalletChain()">
+              Switch Chain
+            </button>
+          </div>
+        </div>
+        <div class="checkbox social-chain-config-toggle">
+          <label>
+            <input type="checkbox" ng-model="menuCtrl.useChainActions" ng-change="menuCtrl.toggleChainActions()">
+            Use smart-contract transactions automatically for help lifecycle actions
+          </label>
+        </div>
+        <p class="text-success social-chain-config-state" ng-if="menuCtrl.walletAddress">
+          Connected wallet: <code>{{ menuCtrl.shortHash(menuCtrl.walletAddress) }}</code> | Chain: {{ menuCtrl.walletChainId || 'n/a' }}
+        </p>
+        <p class="text-warning social-chain-config-state" ng-if="menuCtrl.chainWarning">{{ menuCtrl.chainWarning }}</p>
+        <p class="text-danger social-chain-config-state" ng-if="menuCtrl.walletError">{{ menuCtrl.walletError }}</p>
+      </div>
+
+      <form class="social-support-form" name="helpForm" novalidate ng-submit="menuCtrl.createHelp()">
+        <div class="form-group" ng-if="!menuCtrl.isAuthenticated">
+          <input class="form-control" type="text" placeholder="Anonymous display name (optional)"
+                 ng-model="menuCtrl.newHelp.requester_name">
+        </div>
+        <div class="form-group" ng-if="!menuCtrl.isAuthenticated">
+          <input class="form-control" type="text" placeholder="Contact (optional: email/phone)"
+                 ng-model="menuCtrl.newHelp.requester_contact">
+        </div>
+        <div class="form-group">
+          <input class="form-control" type="text" placeholder="Title" ng-model="menuCtrl.newHelp.title" required>
+        </div>
+        <div class="form-group">
+          <textarea class="form-control" rows="3" placeholder="Description" ng-model="menuCtrl.newHelp.description" required></textarea>
+        </div>
+        <div class="form-group">
+          <input class="form-control" type="text" placeholder="Category (health, education, environment...)" ng-model="menuCtrl.newHelp.category">
+        </div>
+        <div class="form-group" ng-if="menuCtrl.isAuthenticated">
+          <label>Type</label>
+          <select class="form-control" ng-model="menuCtrl.newHelp.help_type">
+            <option value="request">Request Help</option>
+            <option value="offer">Offer Help</option>
+          </select>
+        </div>
+        <div class="row">
+          <div class="col-sm-3 form-group">
+            <label>Urgency (1-5)</label>
+            <input class="form-control" type="number" min="1" max="5" ng-model="menuCtrl.newHelp.urgency" required>
+          </div>
+          <div class="col-sm-3 form-group">
+            <label>Scale (1-5)</label>
+            <input class="form-control" type="number" min="1" max="5" ng-model="menuCtrl.newHelp.scale" required>
+          </div>
+          <div class="col-sm-3 form-group">
+            <label>Resources (1-5)</label>
+            <input class="form-control" type="number" min="1" max="5" ng-model="menuCtrl.newHelp.required_resources" required>
+          </div>
+          <div class="col-sm-3 form-group">
+            <label>Time Available (hrs)</label>
+            <input class="form-control" type="number" min="1" ng-model="menuCtrl.newHelp.time_available_hours" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4 form-group">
+            <label>Supporters</label>
+            <input class="form-control" type="number" min="0" ng-model="menuCtrl.newHelp.supporters">
+          </div>
+          <div class="col-sm-4 form-group">
+            <label>Media URL</label>
+            <input class="form-control" type="url" ng-model="menuCtrl.newHelp.media_url">
+          </div>
+          <div class="col-sm-4 form-group">
+            <label>Acknowledgement URL</label>
+            <input class="form-control" type="url" ng-model="menuCtrl.newHelp.acknowledgement_url">
+          </div>
+        </div>
+        <div class="social-support-form-actions">
+          <button class="btn btn-primary" ng-disabled="helpForm.$invalid || menuCtrl.processing" type="submit">
+            {{ menuCtrl.processing ? 'Posting...' : (menuCtrl.isAuthenticated ? 'Post Help' : 'Post Anonymous Request') }}
+          </button>
+        </div>
+      </form>
+
+      <p class="text-success social-support-feedback" ng-if="menuCtrl.success">{{ menuCtrl.success }}</p>
+      <p class="text-danger social-support-feedback" ng-if="menuCtrl.error">{{ menuCtrl.error }}</p>
+    </div>
+  </section>
+
+  <section class="social-support-feed">
+    <div class="social-support-header">
+      <h3>Prioritized Helps</h3>
+    </div>
+
+    <div class="panel panel-default social-support-help-card" ng-repeat="help in menuCtrl.helps track by help.id">
+      <div class="panel-heading">
+        <strong>{{ help.title }}</strong>
+        <span class="label label-info">{{ help.help_type }}</span>
+        <span class="label label-primary">{{ help.status }}</span>
+        <span class="pull-right">Priority: {{ help.priority_score }}</span>
+      </div>
+      <div class="panel-body">
+        <p class="social-support-help-description">{{ help.description }}</p>
+        <p class="social-support-help-meta">
+          Category: {{ help.category || 'General' }} |
+          Urgency: {{ help.urgency }} |
+          Scale: {{ help.scale }} |
+          Resources: {{ help.required_resources }} |
+          Time: {{ help.time_available_hours }} hrs |
+          Supporters: {{ help.supporters }}
+        </p>
+        <p class="social-support-help-people">
+          Requested by:
+          <a href="" class="social-profile-link" ng-if="help.requester && menuCtrl.canOpenProfile(help.requester.id)" ng-click="menuCtrl.openProfile(help.requester.id)">{{ help.requester.full_name }}</a>
+          <span ng-if="!help.requester || !menuCtrl.canOpenProfile(help.requester.id)">{{ help.requester_label || (help.requester && help.requester.full_name) || 'Anonymous Guest' }}</span>
+          <a href="" class="social-profile-action" ng-if="help.requester && menuCtrl.canStartChat(help.requester.id)" ng-click="menuCtrl.startChat(help.requester.id)">Message</a>
+          |
+          Helper:
+          <a href="" class="social-profile-link" ng-if="help.helper && menuCtrl.canOpenProfile(help.helper.id)" ng-click="menuCtrl.openProfile(help.helper.id)">{{ help.helper.full_name }}</a>
+          <span ng-if="!help.helper || !menuCtrl.canOpenProfile(help.helper.id)">{{ (help.helper && help.helper.full_name) || 'Not assigned' }}</span>
+          <a href="" class="social-profile-action" ng-if="help.helper && menuCtrl.canStartChat(help.helper.id)" ng-click="menuCtrl.startChat(help.helper.id)">Message</a>
+        </p>
+        <p class="social-support-help-chain" ng-if="help.chain && (help.chain.onchain_help_id || (help.ledger && help.ledger.last_tx_hash))">
+          On-chain Help ID: {{ help.chain.onchain_help_id || 'pending' }} |
+          Last chain state: {{ (help.ledger && help.ledger.last_state) || 'n/a' }} |
+          Last tx: {{ menuCtrl.shortHash(help.ledger && help.ledger.last_tx_hash) }}
+        </p>
+
+        <div class="social-support-help-actions" ng-if="menuCtrl.isAuthenticated">
+          <button class="btn btn-default btn-sm" ng-if="help.status === 'open'" ng-click="menuCtrl.takeHelp(help)">Take Help</button>
+          <button class="btn btn-warning btn-sm" ng-if="help.status === 'matched'" ng-click="menuCtrl.markInProgress(help)">Mark In Progress</button>
+          <button class="btn btn-success btn-sm" ng-if="help.status === 'in_progress' || help.status === 'matched'" ng-click="menuCtrl.completeHelp(help)">Mark Completed</button>
+          <button class="btn btn-danger btn-sm" ng-if="help.status !== 'completed' && help.status !== 'cancelled'" ng-click="menuCtrl.cancelHelp(help)">Cancel</button>
+        </div>
+
+        <div class="social-help-ledger-tools">
+          <button class="btn btn-default btn-sm" ng-click="menuCtrl.toggleLedger(help)">
+            {{ menuCtrl.showLedgerByHelp[help.id] ? 'Hide Audit Log' : 'View Audit Log' }}
+          </button>
+          <span class="social-help-ledger-count" ng-if="help.ledger && help.ledger.event_count >= 0">
+            Logged events: {{ help.ledger.event_count }}
+          </span>
+        </div>
+
+        <div class="social-help-ledger-panel" ng-if="menuCtrl.showLedgerByHelp[help.id]">
+          <p class="text-muted" ng-if="menuCtrl.loadingLedgerByHelp[help.id]">Loading audit log...</p>
+          <p class="text-danger" ng-if="menuCtrl.ledgerErrorByHelp[help.id]">{{ menuCtrl.ledgerErrorByHelp[help.id] }}</p>
+
+          <ul class="social-help-ledger-list" ng-if="!menuCtrl.loadingLedgerByHelp[help.id] && menuCtrl.ledgerEventsByHelp[help.id] && menuCtrl.ledgerEventsByHelp[help.id].length">
+            <li ng-repeat="event in menuCtrl.ledgerEventsByHelp[help.id] track by event.id">
+              <div class="social-help-ledger-row">
+                <span class="label label-default">{{ event.action }}</span>
+                <span class="label" ng-class="{
+                  'label-success': event.chain_state === 'confirmed',
+                  'label-info': event.chain_state === 'submitted' || event.chain_state === 'pending',
+                  'label-warning': event.chain_state === 'recorded',
+                  'label-danger': event.chain_state === 'failed'
+                }">{{ event.chain_state }}</span>
+                <span class="social-help-ledger-source">Source: {{ event.source_type }}</span>
+                <span class="social-help-ledger-time">{{ event.created_at | date:'medium' }}</span>
+              </div>
+              <div class="social-help-ledger-row" ng-if="event.tx_hash">
+                <span>Tx:</span>
+                <code>{{ menuCtrl.shortHash(event.tx_hash) }}</code>
+                <span ng-if="event.chain_id">Chain: {{ event.chain_id }}</span>
+                <span ng-if="event.block_number">Block: {{ event.block_number }}</span>
+              </div>
+              <div class="social-help-ledger-row" ng-if="event.notes">
+                <span>Note: {{ event.notes }}</span>
+              </div>
+            </li>
+          </ul>
+
+          <p class="text-muted" ng-if="!menuCtrl.loadingLedgerByHelp[help.id] && (!menuCtrl.ledgerEventsByHelp[help.id] || !menuCtrl.ledgerEventsByHelp[help.id].length)">
+            No ledger events yet.
+          </p>
+
+          <form class="social-help-ledger-form" ng-if="menuCtrl.isHelpParticipant(help)" ng-submit="menuCtrl.recordChainEvent(help)">
+            <h5>Attach Wallet/Indexer Transaction</h5>
+            <div class="row">
+              <div class="col-sm-3 form-group">
+                <label>Action</label>
+                <select class="form-control" ng-model="menuCtrl.ledgerDraftByHelp[help.id].action">
+                  <option value="anchor">anchor</option>
+                  <option value="create">create</option>
+                  <option value="take">take</option>
+                  <option value="mark_in_progress">mark_in_progress</option>
+                  <option value="complete">complete</option>
+                  <option value="cancel">cancel</option>
+                  <option value="appreciation">appreciation</option>
+                </select>
+              </div>
+              <div class="col-sm-3 form-group">
+                <label>Chain State</label>
+                <select class="form-control" ng-model="menuCtrl.ledgerDraftByHelp[help.id].chain_state">
+                  <option value="submitted">submitted</option>
+                  <option value="pending">pending</option>
+                  <option value="confirmed">confirmed</option>
+                  <option value="failed">failed</option>
+                </select>
+              </div>
+              <div class="col-sm-3 form-group">
+                <label>Chain ID</label>
+                <input class="form-control" type="number" min="1" ng-model="menuCtrl.ledgerDraftByHelp[help.id].chain_id">
+              </div>
+              <div class="col-sm-3 form-group">
+                <label>On-chain Help ID</label>
+                <input class="form-control" type="number" min="1" ng-model="menuCtrl.ledgerDraftByHelp[help.id].onchain_help_id">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6 form-group">
+                <label>Transaction Hash</label>
+                <input class="form-control" type="text" ng-model="menuCtrl.ledgerDraftByHelp[help.id].tx_hash" placeholder="0x...">
+              </div>
+              <div class="col-sm-6 form-group">
+                <label>Contract Address</label>
+                <input class="form-control" type="text" ng-model="menuCtrl.ledgerDraftByHelp[help.id].contract_address" placeholder="0x...">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6 form-group">
+                <label>Metadata Hash (CID hash)</label>
+                <input class="form-control" type="text" ng-model="menuCtrl.ledgerDraftByHelp[help.id].metadata_hash">
+              </div>
+              <div class="col-sm-6 form-group">
+                <label>Note</label>
+                <input class="form-control" type="text" ng-model="menuCtrl.ledgerDraftByHelp[help.id].notes">
+              </div>
+            </div>
+            <button class="btn btn-primary btn-sm" type="submit">Record Chain Event</button>
+          </form>
+
+          <p class="text-muted" ng-if="menuCtrl.isAuthenticated && !menuCtrl.isHelpParticipant(help)">
+            Only help participants can attach chain transactions for this help.
+          </p>
+        </div>
+
+        <div ng-if="menuCtrl.isAuthenticated && help.status === 'completed'" class="social-support-appreciation">
+          <h5>Send Appreciation / Reward</h5>
+          <div class="row">
+            <div class="col-sm-3">
+              <input class="form-control" type="number" min="1" max="100" placeholder="Reward points"
+                     ng-model="menuCtrl.appreciationDraft[help.id].reward_points">
+            </div>
+            <div class="col-sm-6">
+              <input class="form-control" type="text" placeholder="Note"
+                     ng-model="menuCtrl.appreciationDraft[help.id].note">
+            </div>
+            <div class="col-sm-3">
+              <button class="btn btn-default" ng-click="menuCtrl.sendAppreciation(help)">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>

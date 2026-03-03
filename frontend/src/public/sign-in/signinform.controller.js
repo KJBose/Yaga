@@ -2,50 +2,33 @@
 "use strict";
 
 angular.module('public')
-.controller('SignUpFormController', SignUpFormController);
+.controller('SignInFormController', SignInFormController);
 
-SignUpFormController.$inject = ['$state', 'MenuService', 'UserDataService'];
-function SignUpFormController($state, MenuService, UserDataService) {
+SignInFormController.$inject = ['$state', 'AuthService'];
+function SignInFormController($state, AuthService) {
   var $ctrl = this;
   $ctrl.user = {
-  firstname:'',
-  lastname:'',
-  email:'',
-  phonenumber:'',
-  favdish:'',
-  userselectedDish:''
- }
-  $ctrl.user.firstname = '';
-  $ctrl.user.lastname = '';
-  $ctrl.user.email = '';
-  $ctrl.user.phonenumber = '';
-  $ctrl.user.favdish = '';
-  $ctrl.userSaved = '';
-  $ctrl.menuNotExist = '';
+    email: '',
+    password: ''
+  };
+  $ctrl.error = '';
+  $ctrl.processing = false;
 
-  //$ctrl.user = {};
-  /*$ctrl.userInput = userInput;
-  $ctrl.signUpComplete = false;*/
-  //console.log(" I came to ctrl");
-  $ctrl.go = function(userdata) {
-    //console.log("entere the Go function");
-    $ctrl.signUpComplete = true;
-    var promise = MenuService.getMenuItems(userdata);
-    promise.then(function (response){
-      $ctrl.user.userselectedDish = response;
-      //console.log('selected dish details', $ctrl.user.userselectedDish);
-      if($ctrl.user.userselectedDish.category != '') {
-        UserDataService.saveUserData($ctrl.user);
-        $ctrl.userSaved = true;
-      } else {
-        $ctrl.menuNotExist = true;
-      }
-    });
+  $ctrl.submit = function () {
+    $ctrl.error = '';
+    $ctrl.processing = true;
 
-
-  }
-
+    AuthService.signIn($ctrl.user)
+      .then(function () {
+        return $state.go('public.profile');
+      })
+      .catch(function (error) {
+        $ctrl.error = (error.data && error.data.error) || 'Unable to login.';
+      })
+      .finally(function () {
+        $ctrl.processing = false;
+      });
+  };
 }
-
 
 })();

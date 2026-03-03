@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>YAGA</title>
-    <link href='https://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/yaga.css">
+    <link rel="stylesheet" href="css/yaga.css?v=20260303e">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/signup.css">
+    <link rel="stylesheet" href="css/signup.css?v=20260312">
+    <link rel="stylesheet" href="css/social.css?v=20260313u">
   </head>
-  <body ng-app="yaga" ng-strict-di>
+  <body ng-app="yaga" ng-strict-di ng-controller="AuthNavController as navAuth">
 
     <!-- Fixed position loading indicator -->
     <loading class="loading-indicator"></loading>
@@ -21,7 +21,7 @@
       <nav id="header-nav" class="navbar navbar-default">
         <div class="container">
           <div class="navbar-header">
-            <a href="index.html" class="pull-left visible-md visible-lg">
+            <a ui-sref="public.home" class="pull-left visible-md visible-lg">
               <div id="logo-img" alt="Logo image"></div>
             </a>
 
@@ -43,25 +43,33 @@
 
           <div id="collapsable-nav" class="collapse navbar-collapse">
             <ul id="nav-list" class="nav navbar-nav navbar-right">
-              <li id="navHomeButton" class="visible-xs">
-                <a href="index.html">
-                  <span class="glyphicon glyphicon-home"></span> Home</a>
+              <li id="navHomeButton" ng-if="navAuth.isAuthenticated()" ng-class="{active: navAuth.isState('public.home')}">
+                <a ui-sref="public.home">
+                  <span class="glyphicon glyphicon-home"></span><br class="hidden-xs"> Home</a>
               </li>
-              <li id="navMenuButton" ui-sref-active="active">
+              <li id="navProfileButton" ng-if="navAuth.isAuthenticated()" ng-class="{active: navAuth.isProfileActive()}">
+                <a ui-sref="public.profile">
+                  <span class="glyphicon glyphicon-user"></span><br class="hidden-xs"> Profile</a>
+              </li>
+              <li id="navSupportButton" ui-sref-active="active">
                 <a ui-sref="public.menu">
-                  <span class="glyphicon glyphicon-info-sign"></span><br class="hidden-xs"> Support</a>
+                  <span class="glyphicon glyphicon-tasks"></span><br class="hidden-xs"> Support</a>
               </li>
-              <li>
-                <a ui-sref="public.myinfo">
-                  <span class="glyphicon glyphicon-user"></span><br class="hidden-xs"> Guest</a>
+              <li id="navChatButton" ui-sref-active="active" ng-if="navAuth.isAuthenticated()">
+                <a ui-sref="public.chat">
+                  <span class="glyphicon glyphicon-comment"></span><br class="hidden-xs"> Chat</a>
               </li>
-              <li>
+              <li ng-if="!navAuth.isAuthenticated()">
                 <a ui-sref="public.signin">
-                  <span class="glyphicon glyphicon-off"></span><br class="hidden-xs"> Sign In</a>
+                  <span class="glyphicon glyphicon-off"></span><br class="hidden-xs"> Login</a>
               </li>
-              <li>
-                <a ui-sref="public.signup">
-                  <span class="glyphicon glyphicon-certificate"></span><br class="hidden-xs"> Sign Up</a>
+              <li ng-if="!navAuth.isAuthenticated()">
+                <a ui-sref="public.createAccount">
+                  <span class="glyphicon glyphicon-certificate"></span><br class="hidden-xs"> Create Account</a>
+              </li>
+              <li ng-if="navAuth.isAuthenticated()">
+                <a href="" ng-click="navAuth.signOut()">
+                  <span class="glyphicon glyphicon-log-out"></span><br class="hidden-xs"> Logout</a>
               </li>
               <!-- <li id="phone" class="hidden-xs">
                 <a href="tel:410-602-5008">
@@ -73,14 +81,6 @@
       </nav><!-- #header-nav -->
     </header>
 
-    <div id="call-btn" class="visible-xs">
-      <a class="btn" href="tel:410-602-5008">
-        <span class="glyphicon glyphicon-earphone"></span>
-        410-602-5008
-      </a>
-    </div>
-    <div id="xs-deliver" class="text-center visible-xs">* We Deliver</div>
-
     <ui-view>
       <div class="text-center initial-loading">
         <h2>Loading Site...</h2>
@@ -91,22 +91,23 @@
       <div class="container">
         <div class="row">
           <section id="hours" class="col-sm-4">
-            <span>Hours:</span><br>
-            Sun-Thurs: 11:15am - 10:00pm<br>
-            Fri: 11:15am - 2:30pm<br>
-            Saturday Closed
+            <span>Mission:</span><br>
+            Make help visible.<br>
+            Connect people and communities.<br>
+            Track real transformation.
             <hr class="visible-xs">
           </section>
           <section id="address" class="col-sm-4">
-            <span>Address:</span><br>
-            7105 Reisterstown Road<br>
-            Baltimore, MD 21215
-            <p>* Delivery area within 3-4 miles, with minimum order of $20 plus $3 charge for all deliveries.</p>
+            <span>Platform:</span><br>
+            Request help<br>
+            Offer help<br>
+            Appreciate impact
+            <p>Yaga promotes practical community action with measurable outcomes.</p>
             <hr class="visible-xs">
           </section>
           <section id="testimonials" class="col-sm-4">
-            <p>"The best Chinese restaurant I've been to! And that's saying a lot, since I've been to many!"</p>
-            <p>"Amazing food! Great service! Couldn't ask for more! I'll be back again and again!"</p>
+            <p>"Small actions, when connected, create durable change."</p>
+            <p>"Yaga helps communities turn intent into impact."</p>
           </section>
         </div>
         <div class="text-center">
@@ -163,29 +164,33 @@
     <script src="lib/bootstrap.min.js"></script>
     <script src="lib/angular.min.js"></script>
     <script src="lib/angular-ui-router.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
     <!-- Main Restaurant Module -->
-    <script src="src/yaga.module.js"></script>
+    <script src="src/yaga.module.js?v=20260303m"></script>
 
     <!-- Common Module -->
-    <script src="src/common/common.module.js"></script>
+    <script src="src/common/common.module.js?v=20260313w"></script>
     <script src="src/common/loading/loading.component.js"></script>
     <script src="src/common/loading/loading.interceptor.js"></script>
-    <script src="src/common/menu.service.js"></script>
+    <script src="src/common/auth.service.js"></script>
+    <script src="src/common/auth-nav.controller.js?v=20260303m"></script>
+    <script src="src/common/help.service.js?v=20260313p"></script>
+    <script src="src/common/web3-help.service.js?v=20260313w"></script>
+    <script src="src/common/social.service.js?v=20260303d"></script>
     <script src="src/common/userdata.service.js"></script>
+    <script src="src/common/chat.service.js"></script>
 
     <!-- Public Module -->
     <script src="src/public/public.module.js"></script>
-    <script src="src/public/public.routes.js"></script>
+    <script src="src/public/public.routes.js?v=20260313w"></script>
 
-    <script src="src/public/menu/menu.controller.js"></script>
-    <script src="src/public/menu-category/menu-category.component.js"></script>
-    <script src="src/public/menu-items/menu-items.controller.js"></script>
-    <script src="src/public/menu-item/menu-item.component.js"></script>
-
+    <script src="src/public/home/home.controller.js?v=20260313"></script>
+    <script src="src/public/menu/menu.controller.js?v=20260313w"></script>
     <script src="src/public/sign-up/signupform.controller.js"></script>
-    <script src="src/public/fav-menu/fav-menu.controller.js"></script>
-    <script src="src/public/my-info/myinfo.controller.js"></script>
+    <script src="src/public/sign-in/signinform.controller.js"></script>
+    <script src="src/public/my-info/myinfo.controller.js?v=20260303m"></script>
+    <script src="src/public/chat/chat.controller.js"></script>
 
     <!-- ADMIN SITE -->
 

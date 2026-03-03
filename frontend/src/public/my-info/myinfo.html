@@ -1,24 +1,245 @@
-<div class="container">
-  <h2 id="menu-categories-title" class="text-center">My Info</h2>
-  <div class="text-center" ng-if="myinfoCtrl.userNotexist">
-    Not Signed Up Yet. <a ui-sref="public.signup"> Sign up Now! </a>
+<div class="container social-profile">
+  <div class="text-center social-guest-panel panel panel-default" ng-if="!myinfoCtrl">
+    <div class="panel-body">
+      Unable to load profile dashboard. Please refresh this page. If it still fails, open browser console and share the first error message.
+    </div>
   </div>
 
-  <div class="text-center" ng-if="myinfoCtrl.userexist">
-      <h3> FirstName: </h3> </a> <span> {{myinfoCtrl.userInfo.firstname}} </span>
-      <h3> LasstName: </h3> </a> <span> {{myinfoCtrl.userInfo.lastname}} </span>
-      <h3> Email: </h3> </a> <span> {{myinfoCtrl.userInfo.email}} </span>
-      <h3> Ph Number: </h3> </a> <span> {{myinfoCtrl.userInfo.phonenumber}} </span>
+  <div class="text-center social-guest-panel panel panel-default" ng-if="myinfoCtrl && myinfoCtrl.userNotexist">
+    <div class="panel-body">
+      <span ng-if="myinfoCtrl.profileNotFound">This profile was not found.</span>
+      <span ng-if="myinfoCtrl.profileRestricted">{{ myinfoCtrl.profileRestrictedMessage }}</span>
+      <span ng-if="!myinfoCtrl.profileNotFound && !myinfoCtrl.profileRestricted">
+        Please <a ui-sref="public.signin">login</a> or <a ui-sref="public.createAccount">create account</a> to open your profile dashboard.
+      </span>
+    </div>
+  </div>
 
-  <h1> {{myinfoCtrl.userInfo.firstname}} {{myinfoCtrl.userInfo.lastname}} favorite Dish </h1>
-  
-  <div class="col-md-3 col-sm-4 col-xs-6 col-xxs-12">
-    <a ui-sref="public.menuitems({category: myinfoCtrl.userInfo.favdish})">
-      <div class="category-tile">
-        <img width="200" height="200" ng-src="images/menu/{{myinfoCtrl.userInfo.favdish}}/{{myinfoCtrl.userInfo.favdish}}.jpg" alt="{{myinfoCtrl.userInfo.category.name}}">
-        <span>{{myinfoCtrl.userInfo.category.name}}</span>
+  <div ng-if="myinfoCtrl && myinfoCtrl.userexist">
+    <section class="social-profile-header panel panel-default">
+      <div class="panel-body">
+        <div class="social-avatar">{{ myinfoCtrl.initials }}</div>
+        <div class="social-profile-header-content">
+          <h2>{{ myinfoCtrl.dashboard.profile.full_name || (myinfoCtrl.readOnlyProfile ? 'Profile' : 'Your Profile') }}</h2>
+          <p>{{ myinfoCtrl.dashboard.profile.user_type }} | {{ myinfoCtrl.dashboard.profile.phone || 'Phone not added' }}</p>
+          <p>{{ myinfoCtrl.dashboard.profile.bio || 'Add a short bio to highlight your mission.' }}</p>
+          <span class="social-rank-badge" ng-if="myinfoCtrl.currentRank">Global Rank #{{ myinfoCtrl.currentRank }}</span>
+          <div class="social-profile-header-actions">
+            <button
+              class="btn btn-success btn-sm"
+              ng-if="myinfoCtrl.canFollowTarget()"
+              ng-click="myinfoCtrl.followTarget()">Follow</button>
+            <button
+              class="btn btn-default btn-sm"
+              ng-if="myinfoCtrl.canUnfollowTarget()"
+              ng-click="myinfoCtrl.unfollowTarget()">Following</button>
+            <button
+              class="btn btn-primary btn-sm"
+              ng-if="myinfoCtrl.canStartChat(myinfoCtrl.dashboard.profile.id)"
+              ng-click="myinfoCtrl.startChat(myinfoCtrl.dashboard.profile.id)">Message</button>
+          </div>
+        </div>
       </div>
-    </a>
-  </div>
+    </section>
+
+    <section class="row social-kpi-row">
+      <div class="col-sm-3">
+        <div class="social-kpi-card">
+          <div class="social-kpi-label">Requested</div>
+          <div class="social-kpi-value">{{ myinfoCtrl.dashboard.help_counts.requested }}</div>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="social-kpi-card">
+          <div class="social-kpi-label">Given</div>
+          <div class="social-kpi-value">{{ myinfoCtrl.helpHistory.given_count }}</div>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="social-kpi-card">
+          <div class="social-kpi-label">Taken</div>
+          <div class="social-kpi-value">{{ myinfoCtrl.helpHistory.taken_count }}</div>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="social-kpi-card">
+          <div class="social-kpi-label">Appreciation Points</div>
+          <div class="social-kpi-value">{{ myinfoCtrl.dashboard.appreciation.received_points }}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="row">
+      <div class="col-md-4">
+        <div class="panel panel-default social-network-card">
+          <div class="panel-body">
+            <div class="social-section-title">Followers & Following</div>
+            <div class="social-network-counts">
+              <div><strong>{{ myinfoCtrl.socialGraph.follower_count }}</strong> Followers</div>
+              <div><strong>{{ myinfoCtrl.socialGraph.following_count }}</strong> Following</div>
+            </div>
+            <p class="social-section-subtitle" ng-if="myinfoCtrl.networkHiddenMessage">{{ myinfoCtrl.networkHiddenMessage }}</p>
+
+            <h5>Followers</h5>
+            <ul class="social-people-list">
+              <li ng-repeat="person in myinfoCtrl.socialGraph.followers track by person.id">
+                <div class="social-person-name">
+                  <a href="" class="social-profile-link" ng-if="myinfoCtrl.canOpenProfile(person.id)" ng-click="myinfoCtrl.openProfile(person.id)">{{ person.full_name }}</a>
+                  <span ng-if="!myinfoCtrl.canOpenProfile(person.id)">{{ person.full_name }}</span>
+                  <a href="" class="social-profile-action" ng-if="myinfoCtrl.canStartChat(person.id)" ng-click="myinfoCtrl.startChat(person.id)">Message</a>
+                </div>
+                <div class="social-person-headline">{{ person.headline }}</div>
+              </li>
+            </ul>
+            <p class="social-section-subtitle" ng-if="!myinfoCtrl.socialGraph.followers.length && !myinfoCtrl.networkHiddenMessage">No followers yet.</p>
+
+            <h5>Following</h5>
+            <ul class="social-people-list">
+              <li ng-repeat="person in myinfoCtrl.socialGraph.following track by person.id">
+                <div class="social-person-name">
+                  <a href="" class="social-profile-link" ng-if="myinfoCtrl.canOpenProfile(person.id)" ng-click="myinfoCtrl.openProfile(person.id)">{{ person.full_name }}</a>
+                  <span ng-if="!myinfoCtrl.canOpenProfile(person.id)">{{ person.full_name }}</span>
+                  <a href="" class="social-profile-action" ng-if="myinfoCtrl.canStartChat(person.id)" ng-click="myinfoCtrl.startChat(person.id)">Message</a>
+                </div>
+                <div class="social-person-headline">{{ person.headline }}</div>
+              </li>
+            </ul>
+            <p class="social-section-subtitle" ng-if="!myinfoCtrl.socialGraph.following.length && !myinfoCtrl.networkHiddenMessage">Not following anyone yet.</p>
+          </div>
+        </div>
+
+        <div class="panel panel-default social-edit-card" ng-if="!myinfoCtrl.readOnlyProfile">
+          <div class="panel-body">
+            <div class="social-section-title">Edit Profile</div>
+            <form name="profileForm" novalidate ng-submit="myinfoCtrl.updateProfile()">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="First name" ng-model="myinfoCtrl.profileForm.first_name" required>
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Last name" ng-model="myinfoCtrl.profileForm.last_name" required>
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Phone" ng-model="myinfoCtrl.profileForm.phone">
+              </div>
+              <div class="form-group">
+                <select class="form-control" ng-model="myinfoCtrl.profileForm.user_type" required>
+                  <option value="Individual">Individual</option>
+                  <option value="NPO">NPO</option>
+                  <option value="GOV">GOV</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Organization name" ng-model="myinfoCtrl.profileForm.organization_name">
+              </div>
+              <div class="form-group">
+                <textarea class="form-control" rows="3" placeholder="Bio" ng-model="myinfoCtrl.profileForm.bio"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Profile Visibility</label>
+                <select class="form-control" ng-model="myinfoCtrl.profileForm.profile_visibility">
+                  <option value="public">Public</option>
+                  <option value="members_only">Members Only</option>
+                  <option value="private">Private</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Followers/Following Visibility</label>
+                <select class="form-control" ng-model="myinfoCtrl.profileForm.network_visibility">
+                  <option value="public">Public</option>
+                  <option value="members_only">Members Only</option>
+                  <option value="private">Private</option>
+                </select>
+              </div>
+              <button class="btn btn-primary btn-sm" ng-disabled="profileForm.$invalid || myinfoCtrl.processing" type="submit">
+                {{ myinfoCtrl.processing ? 'Saving...' : 'Save' }}
+              </button>
+              <button class="btn btn-default btn-sm" type="button" ng-click="myinfoCtrl.signOut()">Logout</button>
+            </form>
+            <p class="text-success" ng-if="myinfoCtrl.success">{{ myinfoCtrl.success }}</p>
+            <p class="text-danger" ng-if="myinfoCtrl.error">{{ myinfoCtrl.error }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-8">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="panel panel-default social-history-card">
+              <div class="panel-body">
+                <div class="social-section-title">Help Given</div>
+                <p class="social-section-subtitle">Where you contributed as a helper.</p>
+                <ul class="social-help-list">
+                  <li ng-repeat="help in myinfoCtrl.helpHistory.given track by help.id">
+                    <div class="social-help-title">{{ help.title }}</div>
+                    <div class="social-help-meta">
+                      {{ help.category || 'general' }} | {{ help.status }} |
+                      For:
+                      <a href="" class="social-profile-link" ng-if="help.requester && myinfoCtrl.canOpenProfile(help.requester.id)" ng-click="myinfoCtrl.openProfile(help.requester.id)">{{ help.requester.full_name }}</a>
+                      <span ng-if="!help.requester || !myinfoCtrl.canOpenProfile(help.requester.id)">{{ help.requester_label || (help.requester && help.requester.full_name) || 'Anonymous Guest' }}</span>
+                      <a href="" class="social-profile-action" ng-if="help.requester && myinfoCtrl.canStartChat(help.requester.id)" ng-click="myinfoCtrl.startChat(help.requester.id)">Message</a>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="panel panel-default social-history-card">
+              <div class="panel-body">
+                <div class="social-section-title">Help Taken</div>
+                <p class="social-section-subtitle">Where you initiated or received help.</p>
+                <ul class="social-help-list">
+                  <li ng-repeat="help in myinfoCtrl.helpHistory.taken track by help.id">
+                    <div class="social-help-title">{{ help.title }}</div>
+                    <div class="social-help-meta">
+                      {{ help.category || 'general' }} | {{ help.status }} |
+                      Helper:
+                      <a href="" class="social-profile-link" ng-if="help.helper && myinfoCtrl.canOpenProfile(help.helper.id)" ng-click="myinfoCtrl.openProfile(help.helper.id)">{{ help.helper.full_name }}</a>
+                      <span ng-if="!help.helper || !myinfoCtrl.canOpenProfile(help.helper.id)">{{ (help.helper && help.helper.full_name) || 'Not assigned' }}</span>
+                      <a href="" class="social-profile-action" ng-if="help.helper && myinfoCtrl.canStartChat(help.helper.id)" ng-click="myinfoCtrl.startChat(help.helper.id)">Message</a>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default social-ranking-card">
+          <div class="panel-body">
+            <div class="social-section-title">Global Contribution Ranking</div>
+            <p class="social-section-subtitle">
+              Ranked by help given, help participation, and appreciation points.
+            </p>
+            <table class="table table-striped table-condensed">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>User</th>
+                  <th>Score</th>
+                  <th>Given</th>
+                  <th>Taken</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  ng-repeat="row in myinfoCtrl.leaderboard | limitTo:15 track by (row.profile.id || $index)"
+                  ng-class="{'info': row.profile && row.profile.id === myinfoCtrl.dashboard.profile.id}">
+                  <td>{{ row.rank }}</td>
+                  <td>
+                    <a href="" class="social-profile-link" ng-if="myinfoCtrl.canOpenProfile(row.profile.id)" ng-click="myinfoCtrl.openProfile(row.profile.id)">{{ row.profile.full_name || 'User' }}</a>
+                    <span ng-if="!myinfoCtrl.canOpenProfile(row.profile.id)">{{ row.profile.full_name || 'User' }}</span>
+                    <a href="" class="social-profile-action" ng-if="myinfoCtrl.canStartChat(row.profile.id)" ng-click="myinfoCtrl.startChat(row.profile.id)">Message</a>
+                  </td>
+                  <td>{{ row.score }}</td>
+                  <td>{{ row.helps_given }}</td>
+                  <td>{{ row.helps_taken }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </div>

@@ -5,57 +5,73 @@ angular.module('common')
 .service('UserDataService', UserDataService);
 
 
-UserDataService.$inject = ['$http', 'AuthApiPath'];
-function UserDataService($http, AuthApiPath) {
+UserDataService.$inject = ['$http', '$q', 'AuthApiPath'];
+function UserDataService($http, $q, AuthApiPath) {
   var userService = this;
-  userService.savedData = '';
-  //service.savedData ={};
+  userService.cachedDashboard = null;
 
-  userService.saveUserData = function (userData) {
-    userService.savedData = userData;
-
-    return $http({
-      method: "POST",
-      url: AuthApiPath + '/categories.json',
-      params: {param1: userService.savedData}
-    }).then(function (response){
+  userService.getProfile = function () {
+    return $http.get(AuthApiPath + '/profile').then(function (response) {
       return response.data;
     });
-
-    //think service implementation?
-    /*return $http.post(AuthApiPath + '/userauths.json').params(userService.savedData).then(function (response) {
-      return response.data;
-    });*/
-    //console.log("I am here to save Data");
-
-    //console.log("userService.savedData", userService.savedData);
-    /*if(response.data == 200){
-      return true;
-    }
-    else {
-      return false
-    }*/
   };
 
-  userService.getUserData = function () {
-    // retrive saved user data
-    /*return $http.get(ApiPath + '/categories.json').then(function (response) {
-      return response.data;
-    });*/
-    //console.log("userService.savedData is", userService.savedData);
-    return userService.savedData;
-  };
-
-  /*userService.getUserData = function (userData) {
-    // retrive saved user data
-    return $http.get(ApiPath + '/categories.json').then(function (response) {
+  userService.updateProfile = function (profile) {
+    return $http.patch(AuthApiPath + '/profile', { profile: profile }).then(function (response) {
       return response.data;
     });
+  };
 
-  };*/
+  userService.getPublicProfile = function (profileId) {
+    return $http.get(AuthApiPath + '/profiles/' + profileId).then(function (response) {
+      return response.data;
+    });
+  };
 
+  userService.getTransformations = function () {
+    return $http.get(AuthApiPath + '/transformations').then(function (response) {
+      return response.data;
+    });
+  };
+
+  userService.getAppreciations = function () {
+    return $http.get(AuthApiPath + '/appreciations').then(function (response) {
+      return response.data;
+    });
+  };
+
+  userService.getDashboard = function () {
+    return $q
+      .all([
+        userService.getProfile(),
+        userService.getTransformations().catch(function () {
+          return { totals: { completed: 0, led: 0, contributed: 0 }, transformations: [] };
+        }),
+        userService.getAppreciations().catch(function () {
+          return { appreciations: [] };
+        })
+      ])
+      .then(function (results) {
+        var profileData = results[0];
+        var transformationsData = results[1];
+        var appreciationsData = results[2];
+
+        userService.cachedDashboard = {
+          profile: profileData.profile,
+          help_counts: profileData.help_counts,
+          appreciation: profileData.appreciation,
+          transformations: transformationsData.transformations,
+          transformation_totals: transformationsData.totals,
+          appreciations: appreciationsData.appreciations
+        };
+
+        return userService.cachedDashboard;
+      });
+  };
+
+  userService.getCachedDashboard = function () {
+    return userService.cachedDashboard;
+  };
 }
-
-
 
 })();

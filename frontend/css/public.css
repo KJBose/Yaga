@@ -1,65 +1,98 @@
 /* HOME PAGE */
 .container .jumbotron {
-  box-shadow: 0 0 50px #3F0C1F;
-  border: 2px solid #3F0C1F;
+  box-shadow: 0 18px 38px rgba(14, 33, 49, 0.16);
+  border: 1px solid #d6e0e8;
+  border-radius: 16px;
+  background-image: linear-gradient(rgba(12, 30, 45, 0.48), rgba(20, 86, 106, 0.34)), url('../images/img1.jpg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
 }
 
-#menu-tile, #specials-tile, #map-tile {
+#menu-tile,
+#specials-tile,
+#map-tile {
   height: 250px;
   width: 100%;
   margin-bottom: 15px;
   position: relative;
-  border: 2px solid #3F0C1F;
+  border: 1px solid #d6e0e8;
+  border-radius: 14px;
   overflow: hidden;
 }
-#menu-tile:hover, #specials-tile:hover, #map-tile:hover {
-  box-shadow: 0 1px 5px 1px #cccccc;
+
+#menu-tile:hover,
+#specials-tile:hover,
+#map-tile:hover {
+  box-shadow: 0 12px 24px rgba(16, 39, 58, 0.14);
 }
+
 #menu-tile {
-  background: url('../images/menu-tile.jpg') no-repeat;
-  background-position: center;
+  background-color: #1a5365;
+  background-image: url('../images/newyaga.png');
+  background-repeat: no-repeat;
+  background-position: center 42%;
+  background-size: 130px auto;
 }
+
 #specials-tile {
-  background: url('../images/specials-tile.jpg') no-repeat;
-  background-position: center;
+  background-color: #234763;
+  background-image: url('../images/yagaLogo.png');
+  background-repeat: no-repeat;
+  background-position: center 42%;
+  background-size: 120px auto;
 }
-#menu-tile span, #specials-tile span, #map-tile span {
+
+#map-tile {
+  background-color: #2a5d50;
+  background-image: url('../images/newyaga.png');
+  background-repeat: no-repeat;
+  background-position: center 42%;
+  background-size: 130px auto;
+}
+
+#menu-tile span,
+#specials-tile span,
+#map-tile span {
   position: absolute;
   bottom: 0;
   right: 0;
   width: 100%;
   text-align: center;
-  font-size: 1.6em;
+  font-size: 1.4em;
   text-transform: uppercase;
-  background-color: #000;
-  color: #fff;
-  opacity: .8;
+  background-color: rgba(13, 28, 40, 0.82);
+  color: #e9f2f9;
+  opacity: .95;
 }
 /* END HOME PAGE */
 
 /* MENU CATEGORIES PAGE */
 .category-tile {
   position: relative;
-  border: 2px solid #3F0C1F;
+  border: 1px solid #d6e0e8;
+  border-radius: 14px;
   overflow: hidden;
   width: 200px;
   height: 200px;
   margin: 0 auto 15px;
 }
+
 .category-tile span {
   position: absolute;
   bottom: 0;
   right: 0;
   width: 100%;
   text-align: center;
-  font-size: 1.2em;
+  font-size: 1.05em;
   text-transform: uppercase;
-  background-color: #000;
-  color: #fff;
-  opacity: .8;
+  background-color: rgba(12, 29, 43, 0.84);
+  color: #f2f7fb;
+  opacity: .95;
 }
+
 .category-tile:hover {
-  box-shadow: 0 1px 5px 1px #cccccc;
+  box-shadow: 0 12px 24px rgba(16, 39, 58, 0.14);
 }
 
 #menu-categories-title + div {
@@ -71,21 +104,26 @@
 .menu-item-tile {
   margin-bottom: 25px;
 }
+
 .menu-item-tile hr {
   width: 80%;
 }
+
 .menu-item-tile .menu-item-price {
   font-size: 1.1em;
   text-align: right;
   margin-top: -15px;
   margin-right: -15px;
 }
+
 .menu-item-tile .menu-item-price span {
   font-size: .6em;
 }
+
 .menu-item-photo {
   position: relative;
-  border: 2px solid #3F0C1F;
+  border: 1px solid #d6e0e8;
+  border-radius: 12px;
   overflow: hidden;
   padding: 0;
   margin-right: -15px;
@@ -93,63 +131,62 @@
   margin-bottom: 20px;
   max-width: 250px;
 }
+
 .menu-item-photo div {
   position: absolute;
   bottom: 0;
   right: 0;
   width: 80px;
-  background-color: #557c3e;
+  background-color: #156b78;
+  color: #f0f7fb;
   text-align: center;
 }
+
 .menu-item-description {
   padding-right: 30px;
 }
+
 h3.menu-item-title {
   margin: 0 0 10px;
 }
+
 .menu-item-details {
   font-size: .9em;
+  color: #607385;
   font-style: italic;
 }
 /* END SINGLE CATEGORY PAGE */
 
-
 /********** Large devices only **********/
 @media (min-width: 1200px) {
   .container .jumbotron {
-    background: url('../images/jumbotron_1200.jpg') no-repeat;
     height: 675px;
   }
 }
 
 /********** Medium devices only **********/
 @media (min-width: 992px) and (max-width: 1199px) {
-  /* Home Page */
   .container .jumbotron {
-    background: url('../images/jumbotron_992.jpg') no-repeat;
     height: 558px;
   }
-  /* End Home Page */
 }
 
 /********** Small devices only **********/
 @media (min-width: 768px) and (max-width: 991px) {
-  /* Home Page */
   .container .jumbotron {
-    background: url('../images/jumbotron_768.jpg') no-repeat;
     height: 432px;
   }
-  /* End Home Page */
 }
 
 /********** Extra small devices only **********/
 @media (max-width: 767px) {
-  /* Home Page */
   .container .jumbotron {
     margin-top: 30px;
     padding: 0;
   }
-  #menu-tile, #specials-tile {
+
+  #menu-tile,
+  #specials-tile {
     width: 360px;
     margin: 0 auto 15px;
   }
@@ -157,19 +194,20 @@ h3.menu-item-title {
   .menu-item-photo {
     margin-right: auto;
   }
+
   .menu-item-tile .menu-item-price {
     text-align: center;
   }
+
   .menu-item-description {
-    text-align: center;;
+    text-align: center;
   }
 }
 
-
 /********** Super extra small devices Only :-) (e.g., iPhone 4) **********/
 @media (max-width: 479px) {
-  /* Home page */
-  #menu-tile, #specials-tile {
+  #menu-tile,
+  #specials-tile {
     width: 280px;
     margin: 0 auto 15px;
   }

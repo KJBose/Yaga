@@ -1,27 +1,99 @@
-body {
-  font-size: 1.2em;
-}
-input {
-  font-size: 24px;
-  margin-bottom: 10px;
-  font-weight: bold;
-  color: black;
-}
-button {
-  font-size: 24px;
-  color: black;
-  font-weight: bold;
-  border-color: brown;
+.auth-shell {
+  max-width: 960px;
+  margin-top: 34px;
+  margin-bottom: 44px;
 }
 
-.ng-touched.ng-valid {
-  border: 2px green solid;
+.auth-panel {
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 30px 30px 28px;
+  border-radius: 24px;
+  border: 1px solid #d7e2ec;
+  background:
+    radial-gradient(380px 200px at 8% -18%, rgba(19, 115, 110, 0.12), transparent),
+    radial-gradient(300px 160px at 92% -14%, rgba(26, 71, 116, 0.11), transparent),
+    #ffffff;
+  box-shadow: 0 24px 52px rgba(14, 37, 56, 0.14);
 }
 
-.ng-touched.ng-invalid {
-  border: 2px red solid;
+.auth-panel-wide {
+  max-width: 720px;
 }
 
-#info {
-  margin-top: 20px;
+.auth-panel h2 {
+  margin: 0 0 7px;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(30px, 4vw, 38px);
+  letter-spacing: 0.01em;
+  color: #132b3f;
+}
+
+.auth-subtitle {
+  margin-bottom: 18px;
+  color: #60758a;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.auth-panel form {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.auth-panel .form-group {
+  margin-bottom: 12px;
+}
+
+.auth-panel .form-control {
+  height: 46px;
+  border-radius: 12px;
+  border: 1px solid #ccd9e5;
+  background: #fbfdff;
+  font-size: 15px;
+}
+
+.auth-panel textarea.form-control {
+  min-height: 96px;
+  height: auto;
+}
+
+.auth-submit-btn {
+  min-width: 170px;
+  padding: 11px 18px;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(18, 99, 109, 0.22);
+}
+
+.auth-panel .text-danger,
+.auth-panel .text-success {
+  margin-top: 12px;
+  margin-bottom: 0;
+}
+
+.auth-panel .ng-touched.ng-valid {
+  border-color: #1d8f7f;
+}
+
+.auth-panel .ng-touched.ng-invalid {
+  border-color: #cf6471;
+}
+
+@media (max-width: 767px) {
+  .auth-shell {
+    margin-top: 22px;
+  }
+
+  .auth-panel {
+    padding: 22px 18px 20px;
+    border-radius: 18px;
+  }
+
+  .auth-subtitle {
+    font-size: 13px;
+  }
 }

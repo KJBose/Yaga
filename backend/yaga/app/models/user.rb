@@ -1,7 +1,4 @@
 require 'mongo'
-require 'pp'
-require 'byebug'
-require 'uri'
 #Mongo::Logger.logger.level = ::Logger::INFO
 #Mongo::Logger.logger.level = ::Logger::DEBUG
 
@@ -31,8 +28,7 @@ class User
     #assign the client to @@db instance variable and return that client
     
     #db = Mongo::Clients.new("mongodb://localhost:27017/test")
-    client = Mongo::Client.new([ 'localhost:27017' ], :database => 'yaga')
-    db = client
+    client = Mongo::Client.new(['localhost:27017'], database: 'yaga')
     return client
   end
 
@@ -86,34 +82,43 @@ class User
 
   def save
   	Rails.logger.debug {"saving #{"self"}"}
-  	#:id => @id
+    bson_id = @id.present? ? BSON::ObjectId.from_string(@id) : BSON::ObjectId.new
 
-  	doc = self.class.collection
-  			   .insert_one(_id:@id, number:@number, first_name:@first_name, last_name:@last_name, gender:@gender, usertype:@usertype, helps:@helps)
+  	self.class.collection.insert_one(
+      _id: bson_id,
+      number: @number,
+      first_name: @first_name,
+      last_name: @last_name,
+      gender: @gender,
+      usertype: @usertype,
+      helps: @helps
+    )
 
-  	return doc.nil? ? nil : User.new(doc)
+    @id = bson_id.to_s
+    self
   end
 
   def update(params)
   	Rails.logger.debug {"updating #{"self"} with #{params}"}
-	@number=params[:number].to_i
+  @number=params[:number].to_i
 	@first_name=params[:first_name]
 	@last_name=params[:last_name]
 	@helps=params[:helps]
 	@gender=params[:gender]
-	@usertype=params[:usertype].to_i
+	@usertype=params[:usertype]
 
-	params.slice!(:number, :first_name, :last_name, :gender, :usertype, :helps)
+  updates = params.slice(:number, :first_name, :last_name, :gender, :usertype, :helps)
+  updates[:number] = updates[:number].to_i if updates.key?(:number)
 
 	return self.class.collection
-			  .find(_id:@id)
-			  .update_one(updates)
+			  .find(_id:BSON::ObjectId.from_string(@id))
+			  .update_one('$set' => updates)
   end
 
   def destroy
 	Rails.logger.debug {"destroying #{"self"}"}
   	return self.class.collection
-			  .find(_id:@id)
+			  .find(_id:BSON::ObjectId.from_string(@id))
 			  .delete_one
   end 
   #Implement CRUD apis End
@@ -139,15 +144,4 @@ class User
   #ActiveModel Framework End
 
 end
-
-
-
-#byebug
-db=User.mongo_client
-p db
-users=User.collection
-p users
-s=User.new
-pp s.sample
-
 

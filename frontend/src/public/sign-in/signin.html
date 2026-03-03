@@ -1,61 +1,24 @@
-<div class="container">
-  <h2> Sign Up </h2>
-  <form name ='signUp' novalidate>
-    <input type = "text" name = "firstname" placeholder="Enter Firstname"
-    ng-model = "signer.user.firstname"
-    required
-    minlength="4"
-    ng-maxlength="10">
-    {{ signer.user.firstname }}
+<div class="container auth-shell">
+  <section class="auth-panel">
+    <h2>Login</h2>
+    <p class="auth-subtitle">Access your network, profile, support board, and messages.</p>
 
-    <span ng-if="signUp.firstname.$error.required
-                && signUp.firstname.$touched"> First Name is Required</span>
-    <span ng-if="signUp.firstname.$error.maxlength && signUp.firstname.$touched">
-                  Username must not be longer than 10 characters </span>
-    <br>
+    <form name="signIn" novalidate ng-submit="signerIn.submit()">
+      <div class="form-group">
+        <input type="email" class="form-control" name="email" placeholder="Email"
+               ng-model="signerIn.user.email" required>
+      </div>
 
-    <input type = "text" name = "lastname" placeholder="Enter Lastname"
-    ng-model = "signer.user.lastname"
-    required
-    minlength="4">
-    {{ signer.user.lastname }}
-    <span ng-if="signUp.lastname.$error.required
-                && signUp.lastname.$touched"> Last Name is Required</span>
-    <br>
-    <input type = "email" name = "email" placeholder="Email"
-    ng-model = "signer.user.email"
-    required>
-    {{ signer.user.email }}
-    <span ng-if="signUp.email.$invalid && signUp.email.$touched">
-      Must be a valid email address: handle@domain format </span>
-    <br>
-    <input type = "text" name = "phonenumber" placeholder="Phone ###-###-####"
-    ng-model = "signer.user.phonenumber"
-    required
-    pattern="(\d{3})-(\d{3})-(\d{4})">
-    {{ signer.user.phonenumber }}
-    <span ng-if="signUp.phonenumber.$invalid && signUp.phonenumber.$touched">
-      Phone must be in the format ###-###-####. </span>
-    <br>
+      <div class="form-group">
+        <input type="password" class="form-control" name="password" placeholder="Password"
+               ng-model="signerIn.user.password" required>
+      </div>
 
-    <input type = "text" name = "favDish" placeholder="Enter your Favourite Dish"
-    ng-model = "signer.user.favdish"
-    required>
-    {{ signer.user.favdish }}
-    <span ng-if="signUp.favDish.$error.required
-                && signUp.favDish.$touched"> Fav Dish is Required</span>
-    <span ng-if="signer.menuNotExist"> No such menu number exists. </span>
-    <br>
+      <button class="btn btn-primary auth-submit-btn" ng-disabled="signIn.$invalid || signerIn.processing" type="submit">
+        {{ signerIn.processing ? 'Logging in...' : 'Login' }}
+      </button>
+    </form>
 
-    <button
-    ng-disabled="signUp.$invalid"
-    ng-click="signer.go(signer.user.favdish)"> Submit </button>
-    <span ng-if="signer.userSaved"> Your information has been saved </span>
-
-
-    <div style="margin-top: 10px;">
-      Form valid? {{ signUp.$valid }}
-    </div>
-
-  </form>
+    <p class="text-danger" ng-if="signerIn.error">{{ signerIn.error }}</p>
+  </section>
 </div>
